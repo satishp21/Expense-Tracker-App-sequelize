@@ -1,33 +1,22 @@
-function login(e) {
+async function login(e) {
+    try{
+
     e.preventDefault();
-    const form = new FormData(e.target);
-
     const loginDetails = {
-        email: form.get("email"),
-        password: form.get("password")
-
+        email: e.target.email.value,
+        password: e.target.password.value
     }
-    // const loginDetails = {
-    //     email: e.target.email.value,
-    //     password: e.target.password.value
-    // }
 
     console.log(loginDetails, "this is login details")
-    // console.log(response.data,response.data.user, "this is response.data.user")
-    axios.post('http://localhost:3000/user/login',loginDetails).then(response => {
-        
-        if(response.status === 200 ){
-            console.log(response)
-            console.log(response.data,response.data.user, "this is response.data.user")
-            localStorage.setItem('token', response.data.token);
-            // localStorage.setItem('userDetails', JSON.stringify(response.data.user))
-            window.location.href = "../ExpenseTracker/index.html" // change the page on successful login
-        } else {
-            throw new Error('Failed to login')
-        }
-    }).catch(err => {
+    const response = await axios.post('http://localhost:3000/user/login',loginDetails)
+
+    localStorage.setItem('token', response.data.token);
+    window.location.href = "../ExpenseTracker/index.html" // change the page on successful login
+    
+    }
+    catch(err) {
         document.body.innerHTML += `<div style="color:red;">${err} <div>`;
-    })
+    }
 }
 
 function forgotpassword() {
