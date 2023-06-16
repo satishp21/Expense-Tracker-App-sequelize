@@ -1,9 +1,9 @@
 const uuid = require('uuid');
-const sgMail = require('@sendgrid/mail');
 const sib = require('sib-api-v3-sdk')
 require('dotenv').config()
-const client = sib.ApiClient.instance
 const bcrypt = require('bcrypt');
+
+const nodemailer = require("nodemailer");
 
 const User = require('../models/users');
 const Forgotpassword = require('../models/forgotpassword');
@@ -13,45 +13,35 @@ const forgotPassword = async (req,res,next) => {
 
     const user = await User.findOne({where:{email}});
 
-            // if(user){
-            // console.log(id,'id')
-            // await user.createForgotpassword({ id , active: true })
-            //     .catch(err => {
-            //         throw new Error(err)
-            //     })
-            // }   
-
     const id = uuid.v4();
     user.createForgotpassword({id,active:true}).catch(err=>{ throw new Error(err)})
 
-    const client = sib.ApiClient.instance
-    const apiKey = client.authentications['api-key']
-    apiKey.apiKey = process.env.API_KEY
+    let testAccount = await nodemailer.createTestAccount();
 
-    const tranEmailApi = new sib.TransactionalEmailsApi()
-    
-    const sender = {
-        email : 'satishdpanchal786@gmail.com',
-        name : 'satish'
-    }
-    
-    const recievers = [
-        {
-            email : email,
-        },
-    ]
+    //connect with smtp
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        auth: {
+            user: 'celia.kris@ethereal.email', //this fake email,pass is given by etherial email
+            pass: 'DAuvmuT99TTzKTpXh1'
+        }
+    });
 
-    tranEmailApi.sendTransacEmail({
-        sender,
-        to: recievers,
-        subject: 'forgotpass please reset',
-        textContent: `Follow the link and reset password`,
-        htmlContent: `Click on the link below to reset password <br> <a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`,
+    let info = await transporter.sendMail({
+        from: '"Fred Foo 👻" <celia.kris@ethereal.email>', // sender address
+        to: `${email}`, // list of receivers
+        subject: " your expense trackers forgotpass link", // Subject line
+        text: "Follow the link and reset password", // plain text body
+        html: `Click on the link below to reset password <br> <a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`, // html body
+      });
 
-    }).then((response)=>{
-        //console.log('after transaction');
-        return res.status(202).json({sucess: true, message: "password mail sent Successful"});
-    }).catch(err=>console.log(err))
+      console.log("Message sent: %s", info.messageId);
+
+      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+      res.end()
+
 }
 
 const resetpassword = (req, res) => {
