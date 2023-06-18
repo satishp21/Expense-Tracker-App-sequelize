@@ -23,7 +23,7 @@ const forgotPassword = async (req,res,next) => {
         host: 'smtp.ethereal.email',
         port: 587,
         auth: {
-            user: 'celia.kris@ethereal.email', //this fake email,pass is given by etherial email
+            user: 'celia.kris@ethereal.email', //this fake email,pass is given by etherial email which changes every time we open https://ethereal.email/ web so update everytime when u want to check forgot pass functinality and link for reset would be at same website in messagge section
             pass: 'DAuvmuT99TTzKTpXh1'
         }
     });
