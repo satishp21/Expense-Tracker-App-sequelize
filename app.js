@@ -5,6 +5,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const compression = require('compression')
 const morgan = require('morgan')
+const bodyParser = require('body-parser')
 //morgan middleware is being used to log HTTP requests. morgan is a popular logging middleware for Express.js that logs requests in a specific format, based on a pre-defined set of tokens
 
 const app = express();
@@ -31,7 +32,22 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname,'access.log'),{
 
 const { Stream } = require('stream');
 
-app.use(helmet()) //middleware to  HTTP headers to improve security
+// app.use(helmet()) //middleware to  HTTP headers to improve security
+app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'", 'data:', 'blob:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://*.cloudflare.com'],
+        scriptSrcElem: ["'self'", 'https:', 'https://*.cloudflare.com'],
+        scriptSrcAttr: ["'self'", "'unsafe-inline'"],
+        connectSrc: ["'self'", 'data:', 'https://*.cloudflare.com', 'http://52.7.15.241:3000'],
+      },
+    })
+  );
+  
+  
+
 app.use(compression())
 app.use(morgan('combined',{stream:accessLogStream}))  
 // above line of code adds the morgan middleware to the Express.js application, which logs HTTP requests in the "combined" format and writes the logs to the accessLogStream writable stream.
@@ -46,6 +62,7 @@ app.use('/premium', premiumFeatureRoutes)
 app.use('/password', resetPasswordRoutes);
 
 app.use((req,res)=>{
+    console.log(req.url)
     res.sendFile(path.join(__dirname,`${req.url}`))
 })
 
