@@ -7,7 +7,7 @@ async function forgotpassword(e) {
         email: form.get("email"),
     }
     
-    const response = await axios.post('http://localhost:3000/password/forgotpassword',userDetails)
+    const response = await axios.post('http://52.7.15.241:3000/password/forgotpassword',userDetails)
     document.body.innerHTML += '<div style="color:red;">Mail Successfuly sent <div>'
 
     }

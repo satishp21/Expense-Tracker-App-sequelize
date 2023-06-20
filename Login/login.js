@@ -8,7 +8,7 @@ async function login(e) {
     }
 
     console.log(loginDetails, "this is login details")
-    const response = await axios.post('http://localhost:3000/user/login',loginDetails)
+    const response = await axios.post('http://52.7.15.241:3000/user/login',loginDetails)
 
     localStorage.setItem('token', response.data.token);
     window.location.href = "../ExpenseTracker/index.html" // change the page on successful login
